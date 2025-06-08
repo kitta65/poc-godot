@@ -11,3 +11,10 @@ In Godot, set `Editor > Editor Settings > Text Editor > External`.
 - `Use External Editor > On`
 
 Install VSCode extension ([godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin)) and configure.
+
+### Export
+
+- Download [export template](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html#export-templates)
+- Enable rcedit
+  - Download from [GitHub releases](https://github.com/electron/rcedit/releases)
+  - Set `Editor > Editor Settings > Export > Windows > rcedit`
