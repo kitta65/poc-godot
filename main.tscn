@@ -10,3 +10,21 @@ edge_scene = ExtResource("2_h2yge")
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
 position = Vector2(240, 360)
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="SaveButton" type="Button" parent="Hud"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -60.0
+offset_right = 24.0
+offset_bottom = -29.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Save"
+
+[connection signal="pressed" from="Hud/SaveButton" to="." method="_on_save_button_pressed"]

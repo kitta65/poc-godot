@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://btg6jnmuvrwjm" path="res://edge.gd" id="1_fxce1"]
 
-[node name="Edge" type="Marker2D"]
+[node name="Edge" type="Marker2D" groups=["save"]]
 script = ExtResource("1_fxce1")

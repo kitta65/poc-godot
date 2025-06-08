@@ -11,3 +11,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	pass
+
+func to_save_data() -> Dictionary:
+	return {
+		"type": "edge",
+		"position.x": position.x,
+		"position.y": position.y
+	}
