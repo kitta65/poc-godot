@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsjr3dwsbpnws"]
+
+[ext_resource type="Script" uid="uid://btg6jnmuvrwjm" path="res://edge.gd" id="1_fxce1"]
+
+[node name="Edge" type="Marker2D"]
+script = ExtResource("1_fxce1")
