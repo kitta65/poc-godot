@@ -14,7 +14,7 @@ func _process(_delta: float) -> void:
 
 func to_save_data() -> Dictionary:
 	return {
-		"type": "edge",
+		"type": "vertex",
 		"position.x": position.x,
 		"position.y": position.y
 	}

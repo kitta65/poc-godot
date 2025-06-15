@@ -1,13 +1,13 @@
 extends Node2D
 
-@export var edge_scene: PackedScene
+@export var vertex_scene: PackedScene
 @export var save_file_path := "user://save_data.jsonl"
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
-		var edge := edge_scene.instantiate()
-		edge.position = event.position
-		add_child(edge)
+		var vertex := vertex_scene.instantiate()
+		vertex.position = event.position
+		add_child(vertex)
 
 
 func _on_save_button_pressed() -> void:
@@ -42,10 +42,10 @@ func _on_load_button_pressed() -> void:
 			continue
 
 		match json.data["type"]:
-			"edge":
-				var edge = edge_scene.instantiate()
-				edge.position = Vector2(json.data["position.x"], json.data["position.y"])
-				add_child(edge)
+			"vertex":
+				var vertex = vertex_scene.instantiate()
+				vertex.position = Vector2(json.data["position.x"], json.data["position.y"])
+				add_child(vertex)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])
 				break
