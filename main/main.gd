@@ -19,10 +19,10 @@ func _on_save_button_pressed() -> void:
 
 	var nodes := get_tree().get_nodes_in_group("save")
 	for node in nodes:
-		if !node.has_method("to_save_data"):
+		if !node.has_method("save"):
 			printerr("cannot save node: %s" % node.name)
 			continue
-		var data = node.to_save_data()
+		var data = node.save()
 		var json := JSON.stringify(data)
 		file.store_line(json)
 
@@ -48,7 +48,7 @@ func _on_load_button_pressed() -> void:
 		match json.data["type"]:
 			"vertex":
 				var vertex = vertex_scene.instantiate()
-				vertex.position = Vector2(json.data["position.x"], json.data["position.y"])
+				vertex.load(json.data)
 				add_child(vertex)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])

@@ -4,7 +4,7 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0jg42"]
 
-[node name="Vertex" type="Marker2D" groups=["save"]]
+[node name="Vertex" type="Marker2D" groups=["save", "vertex"]]
 script = ExtResource("1_fxce1")
 
 [node name="ClickableArea" type="Area2D" parent="."]
