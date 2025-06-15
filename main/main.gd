@@ -9,10 +9,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		and event.pressed
 		and event.button_index == MOUSE_BUTTON_LEFT
 	):
+		_handle_left_click(event)
+
+func _handle_left_click(event: InputEventMouseButton):
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = event.position
+	query.collide_with_areas = true
+	var nodes = get_world_2d().get_direct_space_state().intersect_point(query, 1)
+
+	if nodes.size() == 0:
 		var vertex := vertex_scene.instantiate()
 		vertex.position = event.position
+		# wait 1 frame to avoid activating the vertex immediately
+		await get_tree().process_frame
 		add_child(vertex)
-
 
 func _on_save_button_pressed() -> void:
 	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
