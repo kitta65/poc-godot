@@ -4,7 +4,11 @@ extends Node2D
 @export var save_file_path := "user://save_data.jsonl"
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
+	if (
+		event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
 		var vertex := vertex_scene.instantiate()
 		vertex.position = event.position
 		add_child(vertex)
