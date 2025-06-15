@@ -1,4 +1,5 @@
 extends Node2D
+signal interacted
 
 @export var vertex_scene: PackedScene
 @export var save_file_path := "user://save_data.jsonl"
@@ -20,9 +21,15 @@ func _handle_left_click(event: InputEventMouseButton):
 	if nodes.size() == 0:
 		var vertex := vertex_scene.instantiate()
 		vertex.position = event.position
-		# wait 1 frame to avoid activating the vertex immediately
-		await get_tree().process_frame
+		interacted.connect(vertex._on_main_interacted)
 		add_child(vertex)
+	else:
+		# TODO: get_parent() is not sophisticated
+		var node: Node = nodes[0]["collider"].get_parent()
+		if node.has_method("interact"):
+			var id = node.interact()
+			# TODO: if two vertices are active, it's time to instantiate a new edge
+			interacted.emit(id)
 
 func _on_save_button_pressed() -> void:
 	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
@@ -59,6 +66,7 @@ func _on_load_button_pressed() -> void:
 			"vertex":
 				var vertex = vertex_scene.instantiate()
 				vertex.load(json.data)
+				interacted.connect(vertex._on_main_interacted)
 				add_child(vertex)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])

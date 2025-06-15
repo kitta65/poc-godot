@@ -4,7 +4,7 @@ extends Marker2D
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE
 var id: int = 0
-var activated: bool = false
+var active: bool = false
 
 func _ready() -> void:
 	var clickable_shape := $ClickableArea/ClickableShape
@@ -27,7 +27,7 @@ func _process(_delta: float) -> void:
 	pass
 
 func _draw() -> void:
-	var color := activated_color if activated else deactivated_color
+	var color := activated_color if active else deactivated_color
 	draw_circle(Vector2.ZERO, radius, color)
 
 func load(data: Dictionary) -> void:
@@ -42,9 +42,13 @@ func save() -> Dictionary:
 		"position.y": position.y
 	}
 
-func _toggle_activated() -> void:
-	activated = not activated
+func _set_active(active_: bool) -> void:
+	active = active_
 	queue_redraw()
+
+func interact() -> int:
+	_set_active(true)
+	return id
 
 func _on_clickable_area_input_event(
 	_viewport: Node,
@@ -58,9 +62,8 @@ func _on_clickable_area_input_event(
 	):
 		queue_free()
 
-	elif (
-		event is InputEventMouseButton
-		and event.pressed
-		and event.button_index == MOUSE_BUTTON_LEFT
-	):
-		_toggle_activated()
+func _on_main_interacted(id_: int) -> void:
+	if id_ == id:
+		pass
+	else:
+		_set_active(false)
