@@ -22,3 +22,6 @@ static func get_node_at(self_: CanvasItem, position: Vector2) -> Node:
 		return null
 
 	return nodes[0]["collider"].get_parent()
+
+static func wait_one_frame(self_: Node) -> void:
+	await self_.get_tree().process_frame

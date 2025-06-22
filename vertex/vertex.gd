@@ -13,7 +13,8 @@ func _ready() -> void:
 	else:
 		printerr("Expected CircleShape2D, got: %s" % clickable_shape.shape)
 
-	id = Utils.generate_id(self)
+	if id == 0:
+		id = Utils.generate_id(self)
 
 
 func _process(_delta: float) -> void:

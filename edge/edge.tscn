@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bqkgyikofvn0x" path="res://edge/edge.gd" id="1_uiuwd"]
 
-[node name="Edge" type="Line2D" groups=["edge"]]
+[node name="Edge" type="Line2D" groups=["edge", "save"]]
 script = ExtResource("1_uiuwd")
 
 [node name="ClickableArea" type="Area2D" parent="."]

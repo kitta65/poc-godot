@@ -15,7 +15,9 @@ func _ready() -> void:
 	var end_position: Vector2 = end_vertex.get_ref().position
 	add_point(start_position)
 	add_point(end_position)
-	id = Utils.generate_id(self)
+
+	if id == 0:
+		id = Utils.generate_id(self)
 
 	var polygon := PackedVector2Array()
 	var normal_vector := (end_position - start_position).rotated(PI / 2).normalized()
@@ -40,6 +42,19 @@ func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
 	operated.connect(_on_main_operated)
 	scene.add_child(self)
 
+func load(scene: Node2D, data: Dictionary, operated) -> void:
+	id = data["id"]
+	var vertices := scene.get_tree().get_nodes_in_group("vertex")
+	var filtered_vertices := vertices.filter(func(v): return v.id == data["start"] or v.id == data["end"])
+	init(scene, filtered_vertices, operated)
+
+func save() -> Dictionary:
+	return {
+		"type": Constants.ElementType.EDGE,
+		"id": id,
+		"start": start_vertex.get_ref().id,
+		"end": end_vertex.get_ref().id,
+	}
 
 func delete() -> Types.Operation:
 	queue_free()

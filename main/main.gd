@@ -51,21 +51,24 @@ func _handle_right_click(event: InputEventMouseButton):
 func _on_save_button_pressed() -> void:
 	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
 
-	var nodes := get_tree().get_nodes_in_group("save")
-	for node in nodes:
-		if !node.has_method("save"):
-			printerr("cannot save node: %s" % node.name)
-			continue
-		var data = node.save()
+	# NOTE: save order is important!
+	for vertex in get_tree().get_nodes_in_group("vertex"):
+		var data = vertex.save()
+		var json := JSON.stringify(data)
+		file.store_line(json)
+	for edge in get_tree().get_nodes_in_group("edge"):
+		var data = edge.save()
 		var json := JSON.stringify(data)
 		file.store_line(json)
 
 
 func _on_load_button_pressed() -> void:
-	# rm all nodes
-	var nodes := get_tree().get_nodes_in_group("save")
-	for node in nodes:
-		node.queue_free()
+	# TODO: refactor to remove wait_one_frame
+	# remove all elements
+	var elements := get_tree().get_nodes_in_group("save")
+	for elm in elements:
+		elm.queue_free()
+	await Utils.wait_one_frame(self) # wait for nodes to be removed
 
 	# TODO: error handling (what if the file doesn't exist?)
 	var file = FileAccess.open(save_file_path, FileAccess.READ)
@@ -83,6 +86,9 @@ func _on_load_button_pressed() -> void:
 			Constants.ElementType.VERTEX:
 				var vertex = vertex_scene.instantiate()
 				vertex.load(self, json.data, operated)
+			Constants.ElementType.EDGE:
+				var edge = edge_scene.instantiate()
+				edge.load(self, json.data, operated)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])
 				break
