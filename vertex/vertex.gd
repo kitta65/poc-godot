@@ -23,9 +23,16 @@ func _draw() -> void:
 	var color := activated_color if active else deactivated_color
 	draw_circle(Vector2.ZERO, radius, color)
 
-func load(data: Dictionary) -> void:
+func init(scene: Node2D, position_: Vector2, operated: Signal) -> void:
+	position = position_
+	operated.connect(_on_main_operated)
+	scene.add_child(self)
+
+func load(scene: Node2D, data: Dictionary, operated) -> void:
 	id = data["id"]
 	position = Vector2(data["position.x"], data["position.y"])
+
+	init(scene, position, operated)
 
 func save() -> Dictionary:
 	return {

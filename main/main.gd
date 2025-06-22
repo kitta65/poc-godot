@@ -15,21 +15,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		and event.button_index == MOUSE_BUTTON_LEFT
 	):
 		_handle_left_click(event)
+	elif (
+		event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_RIGHT
+	):
+		_handle_right_click(event)
 
 func _handle_left_click(event: InputEventMouseButton):
-	var query := PhysicsPointQueryParameters2D.new()
-	query.position = event.position
-	query.collide_with_areas = true
-	var nodes = get_world_2d().get_direct_space_state().intersect_point(query, 1)
-
-	if nodes.size() == 0:
+	var node := Utils.get_node_at(self, event.position)
+	if node == null:
 		var vertex := vertex_scene.instantiate()
-		vertex.position = event.position
-		operated.connect(vertex._on_main_operated)
-		add_child(vertex)
+		vertex.init(self, event.position, operated)
 	else:
-		# TODO: get_parent() is not sophisticated
-		var node: Node = nodes[0]["collider"].get_parent()
 		if node.has_method("interact"):
 			var operation = node.interact() as Types.Operation
 			if operation.element_type == Constants.ElementType.VERTEX:
@@ -37,11 +35,12 @@ func _handle_left_click(event: InputEventMouseButton):
 				var actives := vertices.filter(func(v): return v.active)
 				if actives.size() == 2:
 					var edge := edge_scene.instantiate()
-					edge.start_vertex = weakref(actives[0])
-					edge.end_vertex = weakref(actives[1])
-					add_child(edge)
+					edge.init(self, actives, operated)
 
 			operated.emit(operation)
+
+func _handle_right_click(_event: InputEventMouseButton):
+	pass
 
 func _on_save_button_pressed() -> void:
 	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
@@ -77,9 +76,7 @@ func _on_load_button_pressed() -> void:
 		match json.data["type"] as int:
 			Constants.ElementType.VERTEX:
 				var vertex = vertex_scene.instantiate()
-				vertex.load(json.data)
-				operated.connect(vertex._on_main_operated)
-				add_child(vertex)
+				vertex.load(self, json.data, operated)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])
 				break
