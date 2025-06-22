@@ -5,22 +5,15 @@ extends Marker2D
 @export var activated_color := Color.ORANGE
 var id: int = 0
 var active: bool = false
+@onready var clickable_shape = $ClickableArea/ClickableShape
 
 func _ready() -> void:
-	var clickable_shape := $ClickableArea/ClickableShape
-
 	if clickable_shape.shape is CircleShape2D:
 		clickable_shape.shape.radius = radius
 	else:
 		printerr("Expected CircleShape2D, got: %s" % clickable_shape.shape)
 
-	# generate unique ID
-	var vertices := get_tree().get_nodes_in_group("vertex")
-	while (
-		id == 0
-		or vertices.any(func(node: Node): return node != self and node.id == id)
-	):
-		id = randi()
+	id = Utils.generate_id(self)
 
 
 func _process(_delta: float) -> void:
@@ -36,7 +29,7 @@ func load(data: Dictionary) -> void:
 
 func save() -> Dictionary:
 	return {
-		"type": "vertex",
+		"type": Constants.ElementType.VERTEX,
 		"id": id,
 		"position.x": position.x,
 		"position.y": position.y

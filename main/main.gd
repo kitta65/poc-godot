@@ -62,8 +62,8 @@ func _on_load_button_pressed() -> void:
 			printerr("Failed to parse JSON: %s" % line)
 			continue
 
-		match json.data["type"]:
-			"vertex":
+		match json.data["type"] as int:
+			Constants.ElementType.VERTEX:
 				var vertex = vertex_scene.instantiate()
 				vertex.load(json.data)
 				interacted.connect(vertex._on_main_interacted)
