@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://bqkgyikofvn0x" path="res://edge/edge.gd" id="1_uiuwd"]
 
-[node name="Line2D" type="Line2D"]
+[node name="Line2D" type="Line2D" groups=["edge"]]
 script = ExtResource("1_uiuwd")

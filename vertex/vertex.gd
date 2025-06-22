@@ -54,17 +54,24 @@ func interact() -> Types.Operation:
 		id
 	)
 
-func _on_clickable_area_input_event(
-	_viewport: Node,
-	event: InputEvent,
-	_shape_idx: int,
-) -> void:
-	if (
-		event is InputEventMouseButton
-		and event.pressed
-		and event.button_index == MOUSE_BUTTON_RIGHT
-	):
-		queue_free()
+func delete() -> Types.Operation:
+	var edges := get_tree().get_nodes_in_group("edge")
+	for edge in edges:
+		if (
+			edge.start_vertex.get_ref() != self
+			and edge.end_vertex.get_ref() != self
+		):
+			continue
+
+		edge.delete()
+
+	queue_free()
+	return Types.Operation.new(
+		Types.OperationType.DELETE,
+		Constants.ElementType.VERTEX,
+		id
+	)
+
 
 func _on_main_operated(operation: Types.Operation) -> void:
 	if operation.element_id == id:

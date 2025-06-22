@@ -39,8 +39,14 @@ func _handle_left_click(event: InputEventMouseButton):
 
 			operated.emit(operation)
 
-func _handle_right_click(_event: InputEventMouseButton):
-	pass
+func _handle_right_click(event: InputEventMouseButton):
+	var node := Utils.get_node_at(self, event.position)
+	if node == null:
+		return
+
+	if node.has_method("delete"):
+		var operation = node.delete() as Types.Operation
+		operated.emit(operation)
 
 func _on_save_button_pressed() -> void:
 	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
