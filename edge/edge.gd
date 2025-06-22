@@ -1,11 +1,18 @@
 extends Line2D
 
+@export var deactivated_color := Color.WHITE
+@export var activated_color := Color.ORANGE
+@export var line_width := 3.0
+var start_vertex: WeakRef
+var end_vertex: WeakRef
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	default_color = deactivated_color
+	width = line_width
+	points = [
+		start_vertex.get_ref().position,
+		end_vertex.get_ref().position,
+	]
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass

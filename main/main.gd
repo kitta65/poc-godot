@@ -2,7 +2,11 @@ extends Node2D
 signal operated(operation)
 
 @export var vertex_scene: PackedScene
+@export var edge_scene: PackedScene
 @export var save_file_path := "user://save_data.jsonl"
+
+func _ready() -> void:
+	pass
 
 func _unhandled_input(event: InputEvent) -> void:
 	if (
@@ -27,10 +31,16 @@ func _handle_left_click(event: InputEventMouseButton):
 		# TODO: get_parent() is not sophisticated
 		var node: Node = nodes[0]["collider"].get_parent()
 		if node.has_method("interact"):
-			var id = node.interact()
-			# TODO: if two vertices are active, it's time to instantiate a new edge
+			var operation = node.interact() as Types.Operation
+			if operation.element_type == Constants.ElementType.VERTEX:
+				var vertices := get_tree().get_nodes_in_group("vertex")
+				var actives := vertices.filter(func(v): return v.active)
+				if actives.size() == 2:
+					var edge := edge_scene.instantiate()
+					edge.start_vertex = weakref(actives[0])
+					edge.end_vertex = weakref(actives[1])
+					add_child(edge)
 
-			var operation = Types.Operation.new(Types.OperationType.UNSPECIFIED, id)
 			operated.emit(operation)
 
 func _on_save_button_pressed() -> void:

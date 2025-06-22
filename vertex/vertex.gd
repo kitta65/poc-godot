@@ -39,9 +39,13 @@ func _set_active(active_: bool) -> void:
 	active = active_
 	queue_redraw()
 
-func interact() -> int:
+func interact() -> Types.Operation:
 	_set_active(true)
-	return id
+	return Types.Operation.new(
+		Types.OperationType.UNSPECIFIED,
+		Constants.ElementType.VERTEX,
+		id
+	)
 
 func _on_clickable_area_input_event(
 	_viewport: Node,
@@ -56,7 +60,7 @@ func _on_clickable_area_input_event(
 		queue_free()
 
 func _on_main_operated(operation: Types.Operation) -> void:
-	if operation.target == id:
+	if operation.element_id == id:
 		pass
 	else:
 		_set_active(false)
