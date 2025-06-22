@@ -55,8 +55,8 @@ func _on_clickable_area_input_event(
 	):
 		queue_free()
 
-func _on_main_interacted(id_: int) -> void:
-	if id_ == id:
+func _on_main_operated(operation: Types.Operation) -> void:
+	if operation.target == id:
 		pass
 	else:
 		_set_active(false)
