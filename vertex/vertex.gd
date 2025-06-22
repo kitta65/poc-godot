@@ -5,7 +5,7 @@ extends Marker2D
 @export var activated_color := Color.ORANGE
 var id: int = 0
 var active: bool = false
-@onready var clickable_shape = $ClickableArea/ClickableShape
+@onready var clickable_shape: CollisionShape2D = $ClickableArea/ClickableShape
 
 func _ready() -> void:
 	if clickable_shape.shape is CircleShape2D:

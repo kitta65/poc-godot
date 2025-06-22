@@ -6,15 +6,24 @@ extends Line2D
 var id: int = 0
 var start_vertex: WeakRef
 var end_vertex: WeakRef
+@onready var clickable_polygon: CollisionPolygon2D = $ClickableArea/ClickablePolygon
 
 func _ready() -> void:
 	default_color = deactivated_color
 	width = line_width
-	points = [
-		start_vertex.get_ref().position,
-		end_vertex.get_ref().position,
-	]
+	var start_position: Vector2 = start_vertex.get_ref().position
+	var end_position: Vector2 = end_vertex.get_ref().position
+	add_point(start_position)
+	add_point(end_position)
 	id = Utils.generate_id(self)
+
+	var polygon := PackedVector2Array()
+	var normal_vector := (end_position - start_position).rotated(PI / 2).normalized()
+	polygon.append(start_position - normal_vector * line_width / 2)
+	polygon.append(start_position + normal_vector * line_width / 2)
+	polygon.append(end_position + normal_vector * line_width / 2)
+	polygon.append(end_position - normal_vector * line_width / 2)
+	clickable_polygon.polygon = polygon
 
 func _process(_delta: float) -> void:
 	pass
