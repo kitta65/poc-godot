@@ -49,17 +49,13 @@ func _handle_right_click(event: InputEventMouseButton):
 		operated.emit(operation)
 
 func _on_save_button_pressed() -> void:
-	var file = FileAccess.open(save_file_path, FileAccess.WRITE)
+	var file := FileAccess.open(save_file_path, FileAccess.WRITE)
 
 	# NOTE: save order is important!
 	for vertex in get_tree().get_nodes_in_group("vertex"):
-		var data = vertex.save()
-		var json := JSON.stringify(data)
-		file.store_line(json)
+		vertex.save(file)
 	for edge in get_tree().get_nodes_in_group("edge"):
-		var data = edge.save()
-		var json := JSON.stringify(data)
-		file.store_line(json)
+		edge.save(file)
 
 
 func _on_load_button_pressed() -> void:

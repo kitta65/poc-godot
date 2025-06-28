@@ -35,13 +35,15 @@ func load(scene: Node2D, data: Dictionary, operated) -> void:
 
 	init(scene, position, operated)
 
-func save() -> Dictionary:
-	return {
+func save(file: FileAccess) -> void:
+	var data := {
 		"type": Constants.ElementType.VERTEX,
 		"id": id,
 		"position.x": position.x,
 		"position.y": position.y
 	}
+	file.store_line(JSON.stringify((data)))
+
 
 func _set_active(active_: bool) -> void:
 	active = active_

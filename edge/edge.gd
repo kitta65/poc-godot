@@ -48,13 +48,14 @@ func load(scene: Node2D, data: Dictionary, operated) -> void:
 	var filtered_vertices := vertices.filter(func(v): return v.id == data["start"] or v.id == data["end"])
 	init(scene, filtered_vertices, operated)
 
-func save() -> Dictionary:
-	return {
+func save(file: FileAccess) -> void:
+	var data := {
 		"type": Constants.ElementType.EDGE,
 		"id": id,
 		"start": start_vertex.get_ref().id,
 		"end": end_vertex.get_ref().id,
 	}
+	file.store_line(JSON.stringify((data)))
 
 func delete() -> Types.Operation:
 	queue_free()
