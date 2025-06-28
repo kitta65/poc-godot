@@ -5,22 +5,10 @@ signal operated(operation)
 @export var edge_scene: PackedScene
 @export var save_file_path := "user://save_data.jsonl"
 
+#region virautl functions
 func _ready() -> void:
 	pass
-
-func _unhandled_input(event: InputEvent) -> void:
-	if (
-		event is InputEventMouseButton
-		and event.pressed
-		and event.button_index == MOUSE_BUTTON_LEFT
-	):
-		_handle_left_click(event)
-	elif (
-		event is InputEventMouseButton
-		and event.pressed
-		and event.button_index == MOUSE_BUTTON_RIGHT
-	):
-		_handle_right_click(event)
+#endregion
 
 func _handle_left_click(event: InputEventMouseButton):
 	var node := Utils.get_node_at(self, event.position)
@@ -47,16 +35,6 @@ func _handle_right_click(event: InputEventMouseButton):
 	if node.has_method("delete"):
 		var operation = node.delete() as Types.Operation
 		operated.emit(operation)
-
-func _on_save_button_pressed() -> void:
-	var file := FileAccess.open(save_file_path, FileAccess.WRITE)
-
-	# NOTE: save order is important!
-	for vertex in get_tree().get_nodes_in_group("vertex"):
-		vertex.save(file)
-	for edge in get_tree().get_nodes_in_group("edge"):
-		edge.save(file)
-
 
 func _on_load_button_pressed() -> void:
 	# TODO: refactor to remove wait_one_frame
@@ -88,3 +66,26 @@ func _on_load_button_pressed() -> void:
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])
 				break
+
+func _on_save_button_pressed() -> void:
+	var file := FileAccess.open(save_file_path, FileAccess.WRITE)
+
+	# NOTE: save order is important!
+	for type in ["vertex", "edge"]:
+		var elements := get_tree().get_nodes_in_group(type)
+		for element: Element in elements:
+			element.save(file)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if (
+		event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
+		_handle_left_click(event)
+	elif (
+		event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_RIGHT
+	):
+		_handle_right_click(event)

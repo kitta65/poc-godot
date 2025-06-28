@@ -1,12 +1,12 @@
-extends Marker2D
+extends Element
 
 @export var radius := 5.0
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE
-var id: int = 0
 var active: bool = false
 @onready var clickable_shape: CollisionShape2D = $ClickableArea/ClickableShape
 
+#region virautl functions
 func _ready() -> void:
 	if clickable_shape.shape is CircleShape2D:
 		clickable_shape.shape.radius = radius
@@ -23,16 +23,25 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	var color := activated_color if active else deactivated_color
 	draw_circle(Vector2.ZERO, radius, color)
+#endregion
+
+
+#region signals handlers
+func _on_main_operated(operation: Types.Operation) -> void:
+	if operation.element_id == id:
+		pass
+	else:
+		_set_active(false)
+#endregion
+
 
 func init(scene: Node2D, position_: Vector2, operated: Signal) -> void:
 	position = position_
-	operated.connect(_on_main_operated)
-	scene.add_child(self)
+	_instantiate(scene, operated)
 
-func load(scene: Node2D, data: Dictionary, operated) -> void:
+func load(scene: Node2D, data: Dictionary, operated: Signal) -> void:
 	id = data["id"]
 	position = Vector2(data["position.x"], data["position.y"])
-
 	init(scene, position, operated)
 
 func save(file: FileAccess) -> void:
@@ -42,7 +51,7 @@ func save(file: FileAccess) -> void:
 		"position.x": position.x,
 		"position.y": position.y
 	}
-	file.store_line(JSON.stringify((data)))
+	file.store_line(JSON.stringify(data))
 
 
 func _set_active(active_: bool) -> void:
@@ -68,16 +77,7 @@ func delete() -> Types.Operation:
 
 		edge.delete()
 
-	queue_free()
-	return Types.Operation.new(
-		Types.OperationType.DELETE,
-		Constants.ElementType.VERTEX,
-		id
-	)
+	return super ()
 
-
-func _on_main_operated(operation: Types.Operation) -> void:
-	if operation.element_id == id:
-		pass
-	else:
-		_set_active(false)
+func type() -> Constants.ElementType:
+	return Constants.ElementType.VERTEX

@@ -1,34 +1,42 @@
-extends Line2D
+extends Element
 
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE
-@export var line_width := 3.0
-var id: int = 0
+@export var width := 3.0
 var start_vertex: WeakRef
 var end_vertex: WeakRef
 @onready var clickable_polygon: CollisionPolygon2D = $ClickableArea/ClickablePolygon
+@onready var line2d: Line2D = $Line2D
 
+#region virtual functions
 func _ready() -> void:
-	default_color = deactivated_color
-	width = line_width
+	line2d.default_color = deactivated_color
+	line2d.width = width
 	var start_position: Vector2 = start_vertex.get_ref().position
 	var end_position: Vector2 = end_vertex.get_ref().position
-	add_point(start_position)
-	add_point(end_position)
+	line2d.add_point(start_position)
+	line2d.add_point(end_position)
 
 	if id == 0:
 		id = Utils.generate_id(self)
 
 	var polygon := PackedVector2Array()
 	var normal_vector := (end_position - start_position).rotated(PI / 2).normalized()
-	polygon.append(start_position - normal_vector * line_width / 2)
-	polygon.append(start_position + normal_vector * line_width / 2)
-	polygon.append(end_position + normal_vector * line_width / 2)
-	polygon.append(end_position - normal_vector * line_width / 2)
+	polygon.append(start_position - normal_vector * width / 2)
+	polygon.append(start_position + normal_vector * width / 2)
+	polygon.append(end_position + normal_vector * width / 2)
+	polygon.append(end_position - normal_vector * width / 2)
 	clickable_polygon.polygon = polygon
 
 func _process(_delta: float) -> void:
 	pass
+#endregion
+
+
+#region signals handlers
+func _on_main_operated(_operation: Types.Operation) -> void:
+	pass
+#endregion
 
 
 func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
@@ -39,8 +47,7 @@ func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
 	start_vertex = weakref(vertices[0])
 	end_vertex = weakref(vertices[1])
 
-	operated.connect(_on_main_operated)
-	scene.add_child(self)
+	_instantiate(scene, operated)
 
 func load(scene: Node2D, data: Dictionary, operated) -> void:
 	id = data["id"]
@@ -55,16 +62,7 @@ func save(file: FileAccess) -> void:
 		"start": start_vertex.get_ref().id,
 		"end": end_vertex.get_ref().id,
 	}
-	file.store_line(JSON.stringify((data)))
+	return file.store_line(JSON.stringify(data))
 
-func delete() -> Types.Operation:
-	queue_free()
-	return Types.Operation.new(
-		Types.OperationType.DELETE,
-		Constants.ElementType.EDGE,
-		id
-	)
-
-
-func _on_main_operated(_operation: Types.Operation) -> void:
-	pass
+func type() -> Constants.ElementType:
+	return Constants.ElementType.EDGE
