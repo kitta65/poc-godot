@@ -3,9 +3,10 @@ signal operated(operation)
 
 @export var vertex_scene: PackedScene
 @export var edge_scene: PackedScene
+@export var face_scene: PackedScene
 @export var save_file_path := "user://save_data.jsonl"
 
-#region virautl functions
+#region virtual functions
 func _ready() -> void:
 	pass
 #endregion
@@ -16,16 +17,35 @@ func _handle_left_click(event: InputEventMouseButton):
 		var vertex := vertex_scene.instantiate()
 		vertex.init(self, event.position, operated)
 	else:
-		if node.has_method("interact"):
-			var operation = node.interact() as Types.Operation
-			if operation.element_type == Constants.ElementType.VERTEX:
-				var vertices := get_tree().get_nodes_in_group("vertex")
-				var actives := vertices.filter(func(v): return v.active)
-				if actives.size() == 2:
-					var edge := edge_scene.instantiate()
-					edge.init(self, actives, operated)
+		if not node.has_method("interact"):
+			return
 
-			operated.emit(operation)
+		var operation = node.interact() as Types.Operation
+		if operation.element_type == Constants.ElementType.VERTEX:
+			var vertices := get_tree().get_nodes_in_group("vertex")
+			var actives := vertices.filter(func(v): return v.active)
+			if actives.size() != 2:
+				return
+			var edge := edge_scene.instantiate()
+			edge.init(self, actives, operated)
+
+		if operation.element_type == Constants.ElementType.EDGE:
+			var edges := get_tree().get_nodes_in_group("edge")
+			var actives := edges.filter(func(v): return v.active)
+			if actives.size() != 3:
+				return
+			var vertices = []
+			for edge in actives:
+				if edge.start_vertex.get_ref().id not in vertices:
+					vertices.append(edge.start_vertex.get_ref().id)
+				if edge.end_vertex.get_ref().id not in vertices:
+					vertices.append(edge.end_vertex.get_ref().id)
+			if vertices.size() != 3:
+				return
+			var face := face_scene.instantiate()
+			face.init(self, actives, operated)
+
+		operated.emit(operation)
 
 func _handle_right_click(event: InputEventMouseButton):
 	var node := Utils.get_node_at(self, event.position)
@@ -63,6 +83,9 @@ func _on_load_button_pressed() -> void:
 			Constants.ElementType.EDGE:
 				var edge = edge_scene.instantiate()
 				edge.load(self, json.data, operated)
+			Constants.ElementType.FACE:
+				var face = face_scene.instantiate()
+				face.load(self, json.data, operated)
 			_:
 				printerr("Unknown type in JSON: %s" % json.data["type"])
 				break
@@ -71,7 +94,7 @@ func _on_save_button_pressed() -> void:
 	var file := FileAccess.open(save_file_path, FileAccess.WRITE)
 
 	# NOTE: save order is important!
-	for type in ["vertex", "edge"]:
+	for type in ["vertex", "edge", "face"]:
 		var elements := get_tree().get_nodes_in_group(type)
 		for element: Element in elements:
 			element.save(file)

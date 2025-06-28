@@ -2,7 +2,8 @@ extends Element
 
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE
-@export var width := 3.0
+@export var width := 10.0
+var active := false
 var start_vertex: WeakRef
 var end_vertex: WeakRef
 @onready var clickable_polygon: CollisionPolygon2D = $ClickableArea/ClickablePolygon
@@ -34,10 +35,47 @@ func _process(_delta: float) -> void:
 
 
 #region signals handlers
-func _on_main_operated(_operation: Types.Operation) -> void:
-	pass
+func _on_main_operated(operation: Types.Operation) -> void:
+	if operation.element_id == id:
+		return # NOP
+
+	if operation.element_type != type():
+		_set_active(false)
+		return
+
+	# TODO: refactor
+	var edges := get_tree().get_nodes_in_group("edge")
+	var idx := edges.map(func(e): return e.id).find(operation.element_id)
+	if idx == -1:
+		_set_active(false)
+		return
+
+	var edge := edges[0]
+	var has_shared_vertex := false
+	if start_vertex.get_ref().id in [edge.start_vertex.get_ref().id, edge.end_vertex.get_ref().id]:
+		has_shared_vertex = true
+	elif end_vertex.get_ref().id in [edge.start_vertex.get_ref().id, edge.end_vertex.get_ref().id]:
+		has_shared_vertex = true
+
+	if not has_shared_vertex:
+		_set_active(false)
+		return
 #endregion
 
+
+func delete() -> Types.Operation:
+	var faces := get_tree().get_nodes_in_group("face")
+	for face in faces:
+		if (
+			face.edge0.get_ref() != self
+			and face.edge1.get_ref() != self
+			and face.edge2.get_ref() != self
+		):
+			continue
+
+		face.delete()
+
+	return super ()
 
 func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
 	if vertices.size() != 2:
@@ -49,6 +87,15 @@ func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
 
 	_instantiate(scene, operated)
 
+func interact() -> Types.Operation:
+	var operation := Types.Operation.new(
+		 Types.OperationType.DEACTIVATE if active else Types.OperationType.ACTIVATE,
+		type(),
+		id
+	)
+	_set_active(not active)
+	return operation
+
 func load(scene: Node2D, data: Dictionary, operated) -> void:
 	id = data["id"]
 	var vertices := scene.get_tree().get_nodes_in_group("vertex")
@@ -57,12 +104,17 @@ func load(scene: Node2D, data: Dictionary, operated) -> void:
 
 func save(file: FileAccess) -> void:
 	var data := {
-		"type": Constants.ElementType.EDGE,
+		"type": type(),
 		"id": id,
 		"start": start_vertex.get_ref().id,
 		"end": end_vertex.get_ref().id,
 	}
 	return file.store_line(JSON.stringify(data))
+
+func _set_active(active_: bool) -> void:
+	active = active_
+	line2d.default_color = activated_color if active else deactivated_color
+	# queue_redraw() may be needed
 
 func type() -> Constants.ElementType:
 	return Constants.ElementType.EDGE

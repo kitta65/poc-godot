@@ -4,4 +4,5 @@ enum ElementType {
 	UNSPECIFIED = 0,
 	VERTEX,
 	EDGE,
+	FACE,
 }

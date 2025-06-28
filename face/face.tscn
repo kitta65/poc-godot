@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjgiqp5wsh170"]
+
+[ext_resource type="Script" uid="uid://dxiw0w1ntda5x" path="res://face/face.gd" id="1_utt0w"]
+
+[node name="Face" type="Node2D" groups=["face", "save"]]
+script = ExtResource("1_utt0w")
+metadata/_custom_type_script = "uid://b4mwosgrhyiq2"
+
+[node name="ClickableArea" type="Area2D" parent="."]
+
+[node name="ClickablePolygon" type="CollisionPolygon2D" parent="ClickableArea"]
+polygon = PackedVector2Array(0, 0, 0, 0, 0, 0)
+
+[node name="AppearancePolygon" type="Polygon2D" parent="."]

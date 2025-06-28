@@ -2,7 +2,9 @@ class_name Types
 
 enum OperationType {
 	UNSPECIFIED = 0,
+	ACTIVATE,
 	CREATE,
+	DEACTIVATE,
 	DELETE,
 }
 
