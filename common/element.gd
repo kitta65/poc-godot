@@ -3,6 +3,15 @@ extends Node2D
 class_name Element
 
 var id: int = 0
+static var ids: Dictionary[int, WeakRef] = {}
+
+#region virtual functions
+func _ready() -> void:
+	if id == 0:
+		id = Utils.generate_id(self)
+	ids[id] = weakref(self)
+#endregion
+
 
 #region signal handlers
 func _on_main_operated(_operation: Types.Operation) -> void:
@@ -12,6 +21,7 @@ func _on_main_operated(_operation: Types.Operation) -> void:
 
 func delete() -> Types.Operation:
 	queue_free()
+	ids.erase(id)
 	return Types.Operation.new(
 		Types.OperationType.DELETE,
 		type(),

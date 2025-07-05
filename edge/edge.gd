@@ -18,9 +18,6 @@ func _ready() -> void:
 	line2d.add_point(start_position)
 	line2d.add_point(end_position)
 
-	if id == 0:
-		id = Utils.generate_id(self)
-
 	var polygon := PackedVector2Array()
 	var normal_vector := (end_position - start_position).rotated(PI / 2).normalized()
 	polygon.append(start_position - normal_vector * width / 2)
@@ -28,6 +25,8 @@ func _ready() -> void:
 	polygon.append(end_position + normal_vector * width / 2)
 	polygon.append(end_position - normal_vector * width / 2)
 	clickable_polygon.polygon = polygon
+
+	super._ready()
 
 func _process(_delta: float) -> void:
 	pass
@@ -75,7 +74,7 @@ func delete() -> Types.Operation:
 
 		face.delete()
 
-	return super ()
+	return super.delete()
 
 func init(scene: Node2D, vertices: Array[Node], operated: Signal) -> void:
 	if vertices.size() != 2:

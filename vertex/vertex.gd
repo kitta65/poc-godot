@@ -13,9 +13,7 @@ func _ready() -> void:
 	else:
 		printerr("Expected CircleShape2D, got: %s" % clickable_shape.shape)
 
-	if id == 0:
-		id = Utils.generate_id(self)
-
+	super._ready()
 
 func _process(_delta: float) -> void:
 	pass
@@ -46,7 +44,7 @@ func delete() -> Types.Operation:
 
 		edge.delete()
 
-	return super ()
+	return super.delete()
 
 func init(scene: Node2D, position_: Vector2, operated: Signal) -> void:
 	position = position_

@@ -25,8 +25,7 @@ func _ready() -> void:
 	appearance_polygon.polygon = polygon
 	clickable_polygon.polygon = polygon
 
-	if id == 0:
-		id = Utils.generate_id(self)
+	super._ready()
 #endregion
 
 #region signals handlers
