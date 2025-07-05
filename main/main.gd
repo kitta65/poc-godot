@@ -57,12 +57,16 @@ func _handle_right_click(event: InputEventMouseButton):
 		operated.emit(operation)
 
 func _on_load_button_pressed() -> void:
-	# TODO: refactor to remove wait_one_frame
 	# remove all elements
-	var elements := get_tree().get_nodes_in_group("save")
-	for elm in elements:
-		elm.queue_free()
-	await Utils.wait_one_frame(self) # wait for nodes to be removed
+	var faces := get_tree().get_nodes_in_group("face")
+	for face: Element in faces:
+		face.delete()
+	var edges := get_tree().get_nodes_in_group("edge")
+	for edge: Element in edges:
+		edge.delete()
+	var vertices := get_tree().get_nodes_in_group("vertex")
+	for vertex: Element in vertices:
+		vertex.delete()
 
 	# TODO: error handling (what if the file doesn't exist?)
 	var file = FileAccess.open(save_file_path, FileAccess.READ)

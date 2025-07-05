@@ -7,8 +7,12 @@ static var ids: Dictionary[int, WeakRef] = {}
 
 #region virtual functions
 func _ready() -> void:
-	if id == 0:
-		id = Utils.generate_id(self)
+	while (
+		id == 0
+		or id in ids
+	):
+		id = randi()
+
 	ids[id] = weakref(self)
 #endregion
 

@@ -46,13 +46,12 @@ func init(scene: Node2D, edges: Array[Node], operated: Signal) -> void:
 
 func load(scene: Node2D, data: Dictionary, operated) -> void:
 	id = data["id"]
-	var edges := scene.get_tree().get_nodes_in_group("edge")
-	var filtered_edges := edges.filter(func(e): return (
-		e.id == data["edge0"]
-		or e.id == data["edge1"]
-		or e.id == data["edge2"]
-	))
-	init(scene, filtered_edges, operated)
+	var edges: Array[Node] = [
+		ids[data["edge0"] as int].get_ref(),
+		ids[data["edge1"] as int].get_ref(),
+		ids[data["edge2"] as int].get_ref()
+	]
+	init(scene, edges, operated)
 
 func save(file: FileAccess) -> void:
 	var data := {

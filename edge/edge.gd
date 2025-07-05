@@ -42,14 +42,13 @@ func _on_main_operated(operation: Types.Operation) -> void:
 		_set_active(false)
 		return
 
-	# TODO: refactor
-	var edges := get_tree().get_nodes_in_group("edge")
-	var idx := edges.map(func(e): return e.id).find(operation.element_id)
-	if idx == -1:
+	var weak_ref = ids[operation.element_id]
+	# if the edge has been deleted
+	if weak_ref == null:
 		_set_active(false)
 		return
+	var edge = weak_ref.get_ref()
 
-	var edge := edges[0]
 	var has_shared_vertex := false
 	if start_vertex.get_ref().id in [edge.start_vertex.get_ref().id, edge.end_vertex.get_ref().id]:
 		has_shared_vertex = true
@@ -97,9 +96,11 @@ func interact() -> Types.Operation:
 
 func load(scene: Node2D, data: Dictionary, operated) -> void:
 	id = data["id"]
-	var vertices := scene.get_tree().get_nodes_in_group("vertex")
-	var filtered_vertices := vertices.filter(func(v): return v.id == data["start"] or v.id == data["end"])
-	init(scene, filtered_vertices, operated)
+	var vertices: Array[Node] = [
+		ids[data["start"] as int].get_ref(),
+		ids[data["end"] as int].get_ref()
+	]
+	init(scene, vertices, operated)
 
 func save(file: FileAccess) -> void:
 	var data := {
