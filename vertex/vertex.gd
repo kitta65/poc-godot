@@ -1,4 +1,5 @@
 extends Element
+class_name Vertex
 
 @export var radius := 10.0
 @export var deactivated_color := Color.WHITE

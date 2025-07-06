@@ -4,7 +4,8 @@ signal operated(operation)
 @export var vertex_scene: PackedScene
 @export var edge_scene: PackedScene
 @export var face_scene: PackedScene
-@export var save_file_path := "user://save_data.jsonl"
+@export var save_file_path := "user://model.jsonl"
+@export var gltf_file_path := "user://model.gltf"
 
 #region virtual functions
 func _ready() -> void:
@@ -55,6 +56,10 @@ func _handle_right_click(event: InputEventMouseButton):
 	if node.has_method("delete"):
 		var operation = node.delete() as Types.Operation
 		operated.emit(operation)
+
+func _on_export_button_pressed() -> void:
+	var file := FileAccess.open(gltf_file_path, FileAccess.WRITE)
+	Element.export(file)
 
 func _on_load_button_pressed() -> void:
 	# remove all elements

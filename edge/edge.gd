@@ -1,4 +1,5 @@
 extends Element
+class_name Edge
 
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE

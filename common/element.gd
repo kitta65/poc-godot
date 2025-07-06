@@ -5,6 +5,28 @@ class_name Element
 var id: int = 0
 static var ids: Dictionary[int, WeakRef] = {}
 
+#region static functions
+static func export(file: FileAccess, format := "gltf") -> void:
+	if format != "gltf":
+		printerr("Unsupported export format: %s" % format)
+		return
+
+	var vertices: Array[Vertex] = []
+	var faces: Array[Face] = []
+	for key in ids.keys():
+		var elm : Element = ids[key].get_ref()
+		if elm == null:
+			continue
+		match elm.type():
+			Constants.ElementType.VERTEX:
+				vertices.append(elm)
+			Constants.ElementType.FACE:
+				faces.append(elm)
+	var gltf := Gltf.new(vertices, faces)
+	gltf.save(file)
+#endregion
+
+
 #region virtual functions
 func _ready() -> void:
 	while (

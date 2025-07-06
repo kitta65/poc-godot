@@ -1,4 +1,5 @@
 extends Element
+class_name Face
 
 @export var deactivated_color := Color.WHITE
 @export var activated_color := Color.ORANGE
@@ -65,3 +66,14 @@ func save(file: FileAccess) -> void:
 
 func type() -> Constants.ElementType:
 	return Constants.ElementType.FACE
+
+func vertices() -> Array[Node]:
+	var vertices_ = []
+	for edge in [edge0, edge1, edge2]:
+		if edge.start_vertex.get_ref() not in vertices_:
+			vertices_.append(edge.start_vertex.get_ref())
+		if edge.end_vertex.get_ref() not in vertices_:
+			vertices_.append(edge.end_vertex.get_ref())
+	if vertices_.size() != 3:
+		printerr("The size of vertices should be 3, got: %d" % vertices_.size())
+	return vertices_
