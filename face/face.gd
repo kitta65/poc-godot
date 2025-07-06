@@ -68,8 +68,9 @@ func type() -> Constants.ElementType:
 	return Constants.ElementType.FACE
 
 func vertices() -> Array[Node]:
-	var vertices_ = []
-	for edge in [edge0, edge1, edge2]:
+	var vertices_: Array[Node] = []
+	for weak_ref in [edge0, edge1, edge2]:
+		var edge: Edge = weak_ref.get_ref()
 		if edge.start_vertex.get_ref() not in vertices_:
 			vertices_.append(edge.start_vertex.get_ref())
 		if edge.end_vertex.get_ref() not in vertices_:
