@@ -18,3 +18,7 @@ Install VSCode extension ([godot-vscode-plugin](https://github.com/godotengine/g
 - Enable rcedit
   - Download from [GitHub releases](https://github.com/electron/rcedit/releases)
   - Set `Editor > Editor Settings > Export > Windows > rcedit`
+
+### Gut
+
+Install Gut from in-editor Godot Asset Lib and then activate ([see](https://gut.readthedocs.io/en/latest/Install.html)).
